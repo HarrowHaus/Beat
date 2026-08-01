@@ -59,6 +59,14 @@ CHAINS = {
         HighpassFilter(200),
         Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
     ]),
+    "chant": Pedalboard([
+        HighpassFilter(280),
+        Distortion(drive_db=9),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-4.0, q=0.9),  # vocal pocket
+        Chorus(rate_hz=0.4, depth=0.3, mix=0.4),  # widen the crowd
+        Reverb(room_size=0.6, wet_level=0.22, dry_level=0.78),
+        Compressor(threshold_db=-15, ratio=3),
+    ]),
 }
 
 MASTER = Pedalboard([
@@ -68,7 +76,7 @@ MASTER = Pedalboard([
     PeakFilter(cutoff_frequency_hz=3200, gain_db=-1.0, q=1.0), # vocal pocket
     HighShelfFilter(cutoff_frequency_hz=11000, gain_db=1.0),   # air
     Compressor(threshold_db=-14, ratio=1.8, attack_ms=25, release_ms=180),  # glue
-    Limiter(threshold_db=-6.0, release_ms=120),                # vocal headroom
+    Limiter(threshold_db=-4.5, release_ms=120),                # vocal headroom
 ])
 
 
@@ -115,11 +123,13 @@ def mix_and_master(stems, duck_times, bpm, out_dir, stem_gains=None):
             pad = sidechain_duck(pad, duck_times, bpm, depth=0.35)
         bus += pad
 
+    # F1lthy method: one shared soft-clipper across the whole instrumental bus
+    bus = np.tanh(bus * 1.4) / np.tanh(1.4)
     bus = mono_below(bus, 150)
     master = _proc(MASTER, bus)
     peak = np.abs(master).max()
-    if peak > 10 ** (-6 / 20):  # enforce -6 dBFS true headroom
-        master *= 10 ** (-6 / 20) / peak
+    if peak > 10 ** (-4 / 20):  # enforce -4 dBFS true peak headroom for vocals
+        master *= 10 ** (-4 / 20) / peak
 
     for name, x in processed.items():
         sf.write(os.path.join(out_dir, f"stem_{name}.wav"), x.T, SR, subtype="PCM_24")
