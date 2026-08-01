@@ -59,6 +59,20 @@ CHAINS = {
         HighpassFilter(200),
         Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
     ]),
+    "indus": Pedalboard([          # Machine Gun-style loop: crushed, DRY, mid-forward
+        HighpassFilter(70),
+        Distortion(drive_db=10),
+        PeakFilter(cutoff_frequency_hz=1200, gain_db=3.0, q=0.7),
+        Compressor(threshold_db=-10, ratio=6, attack_ms=2, release_ms=50),
+        LowpassFilter(9000),
+    ]),
+    "drone": Pedalboard([
+        HighpassFilter(90),
+        PeakFilter(cutoff_frequency_hz=2600, gain_db=-4.0, q=0.8),  # vocal pocket
+        LowpassFilter(5500),
+        Chorus(rate_hz=0.3, depth=0.2, mix=0.3),
+        Compressor(threshold_db=-18, ratio=2),
+    ]),
     "chop": Pedalboard([
         HighpassFilter(60),
         PeakFilter(cutoff_frequency_hz=400, gain_db=2.0, q=0.8),   # sample warmth

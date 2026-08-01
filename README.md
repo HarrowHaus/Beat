@@ -1,7 +1,36 @@
 # Beat productions
 
-Two instrumentals, produced entirely in code (headless, no DAW), mixed and
+Three instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
+
+---
+
+# ANTIVENOM — in the style of VENOM / FIELD TRIP (¥$, Vultures 2)
+
+**Listen:** `output_venom/beat_mix.mp3` · master: `output_venom/beat_mix.flac`
+
+The reference ("VENOM" is the leak title of FIELD TRIP, the Carti "spittin'
+out venom" track) is built on the Portishead "Machine Gun" industrial
+drum-machine loop. This recreates that character from scratch — no sample:
+a blunt bit-crushed kick and a **metallic, splattery snare** (noise × square
+ring-mod, 6-bit crush, bone-dry, mid-forward), with machine-gun 32nd stutter
+bursts at 4-bar turnarounds.
+
+| | |
+|---|---|
+| BPM | **122**, half-time feel (~61), straight grid — no swing |
+| Key | **F♯ minor**, static drone harmony: i / i / ♭VI / ♭VII |
+| Length | 76 bars ≈ 2:30 |
+| Headroom | −4 dBFS true peak, vocal-ready |
+
+The drums are the melody: dark low-passed analog drones and a sparse eerie
+bell motif are the only pitched content over a gliding F♯–E–D 808. Verse A
+strips to loop + sub (Carti's pocket), verse B floats the drone back with
+bell delay throws (Toliver's pocket), then the **beat-switch outro** drops
+the industrial loop for a warm Rhodes bed (Dmaj7–C♯m7–F♯m9) with choir —
+the Kodak-section move. 12 stems + MIDI in `output_venom/`.
+
+Rebuild: `python -m beatlab.score_venom`
 
 ---
 
