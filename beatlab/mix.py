@@ -1,0 +1,128 @@
+"""beatlab.mix — stem processing and vocal-ready mastering with pedalboard."""
+import numpy as np
+import soundfile as sf
+from pedalboard import (
+    Pedalboard, Compressor, Distortion, HighpassFilter, LowpassFilter,
+    PeakFilter, Reverb, Delay, Limiter, Gain, Chorus, HighShelfFilter,
+    LowShelfFilter,
+)
+
+from .engine import SR
+
+
+def _proc(board, stereo):
+    return board(stereo.astype(np.float32), SR)
+
+
+CHAINS = {
+    "808": Pedalboard([
+        HighpassFilter(28),
+        Distortion(drive_db=6),
+        Compressor(threshold_db=-12, ratio=4, attack_ms=8, release_ms=90),
+        LowpassFilter(6500),
+        Gain(-1.0),
+    ]),
+    "kick": Pedalboard([
+        HighpassFilter(35),
+        Compressor(threshold_db=-10, ratio=4, attack_ms=3, release_ms=60),
+    ]),
+    "hats": Pedalboard([
+        HighpassFilter(600),
+        HighShelfFilter(cutoff_frequency_hz=10000, gain_db=2.0),
+        Compressor(threshold_db=-18, ratio=2.5),
+    ]),
+    "clap": Pedalboard([
+        HighpassFilter(250),
+        Reverb(room_size=0.35, wet_level=0.12, dry_level=0.88),
+        Compressor(threshold_db=-14, ratio=3),
+    ]),
+    "lead": Pedalboard([
+        HighpassFilter(220),
+        Chorus(rate_hz=0.6, depth=0.15, mix=0.25),
+        # carve vocal pocket in the loud lead
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-3.5, q=0.9),
+        Delay(delay_seconds=0.24, feedback=0.25, mix=0.14),
+        Reverb(room_size=0.5, wet_level=0.15, dry_level=0.85),
+        Compressor(threshold_db=-16, ratio=3),
+    ]),
+    "pad": Pedalboard([
+        HighpassFilter(160),
+        PeakFilter(cutoff_frequency_hz=2800, gain_db=-4.0, q=0.8),
+        Reverb(room_size=0.8, wet_level=0.35, dry_level=0.65),
+    ]),
+    "bell": Pedalboard([
+        HighpassFilter(300),
+        Delay(delay_seconds=0.32, feedback=0.35, mix=0.22),
+        Reverb(room_size=0.7, wet_level=0.28, dry_level=0.72),
+    ]),
+    "fx": Pedalboard([
+        HighpassFilter(200),
+        Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
+    ]),
+}
+
+MASTER = Pedalboard([
+    HighpassFilter(24),
+    LowShelfFilter(cutoff_frequency_hz=90, gain_db=1.5),      # weight
+    PeakFilter(cutoff_frequency_hz=300, gain_db=-1.5, q=0.8),  # mud control
+    PeakFilter(cutoff_frequency_hz=3200, gain_db=-1.0, q=1.0), # vocal pocket
+    HighShelfFilter(cutoff_frequency_hz=11000, gain_db=1.0),   # air
+    Compressor(threshold_db=-14, ratio=1.8, attack_ms=25, release_ms=180),  # glue
+    Limiter(threshold_db=-6.0, release_ms=120),                # vocal headroom
+])
+
+
+def sidechain_duck(stereo, trigger_times, bpm, depth=0.45, release_beats=0.7):
+    """Duck a buffer at 808/kick hits — the trap 'pump'."""
+    n = stereo.shape[1]
+    env = np.ones(n)
+    rel = int(release_beats * (60 / bpm) * SR)
+    curve = 1 - depth * (1 - np.linspace(0, 1, rel) ** 1.5)
+    for t in trigger_times:
+        i = int(t * SR)
+        j = min(i + rel, n)
+        env[i:j] = np.minimum(env[i:j], curve[: j - i])
+    return stereo * env
+
+
+def mono_below(stereo, hz=150):
+    """Mono-fold the sub region for club/phone playback safety."""
+    lo_l = _proc(Pedalboard([LowpassFilter(hz)]), stereo)
+    hi = stereo - lo_l
+    mono = lo_l.mean(axis=0, keepdims=True)
+    return hi + np.repeat(mono, 2, axis=0)
+
+
+def mix_and_master(stems, duck_times, bpm, out_dir, stem_gains=None):
+    """Process stems, sum, master. Writes stems + final mix. Returns mix path."""
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+    stem_gains = stem_gains or {}
+    processed = {}
+    for name, buf in stems.items():
+        chain = CHAINS.get(name.split("_")[0], Pedalboard([HighpassFilter(30)]))
+        x = _proc(chain, buf)
+        x *= 10 ** (stem_gains.get(name, 0.0) / 20)
+        processed[name] = x
+
+    n = max(x.shape[1] for x in processed.values())
+    bus = np.zeros((2, n), dtype=np.float32)
+    for name, x in processed.items():
+        pad = np.zeros((2, n), dtype=np.float32)
+        pad[:, : x.shape[1]] = x
+        processed[name] = pad
+        if name.split("_")[0] not in ("808", "kick"):
+            pad = sidechain_duck(pad, duck_times, bpm, depth=0.35)
+        bus += pad
+
+    bus = mono_below(bus, 150)
+    master = _proc(MASTER, bus)
+    peak = np.abs(master).max()
+    if peak > 10 ** (-6 / 20):  # enforce -6 dBFS true headroom
+        master *= 10 ** (-6 / 20) / peak
+
+    for name, x in processed.items():
+        sf.write(os.path.join(out_dir, f"stem_{name}.wav"), x.T, SR, subtype="PCM_24")
+    mix_path = os.path.join(out_dir, "beat_mix.wav")
+    sf.write(mix_path, master.T, SR, subtype="PCM_24")
+    return mix_path, peak
