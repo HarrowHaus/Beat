@@ -233,8 +233,11 @@ class Track:
         pr = np.sin((self.pan + 1) * np.pi / 4)
         for t0, buf in self.events:
             i = int(t0 * SR)
+            if i < 0:
+                buf = buf[-i:]
+                i = 0
             j = min(i + len(buf), n)
-            if i >= n:
+            if i >= n or len(buf) == 0:
                 continue
             seg = buf[: j - i]
             L[i:j] += seg * g * pl

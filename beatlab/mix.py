@@ -59,6 +59,20 @@ CHAINS = {
         HighpassFilter(200),
         Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
     ]),
+    "chop": Pedalboard([
+        HighpassFilter(60),
+        PeakFilter(cutoff_frequency_hz=400, gain_db=2.0, q=0.8),   # sample warmth
+        PeakFilter(cutoff_frequency_hz=2200, gain_db=-2.5, q=0.9),  # vocal pocket
+        HighShelfFilter(cutoff_frequency_hz=8000, gain_db=1.5),     # chipmunk sheen
+        Compressor(threshold_db=-16, ratio=3, attack_ms=10, release_ms=120),
+        Reverb(room_size=0.4, wet_level=0.1, dry_level=0.9),
+    ]),
+    "organ": Pedalboard([
+        HighpassFilter(100),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-3.0, q=0.9),
+        Reverb(room_size=0.55, wet_level=0.18, dry_level=0.82),
+        Compressor(threshold_db=-16, ratio=2.5),
+    ]),
     "chant": Pedalboard([
         HighpassFilter(280),
         Distortion(drive_db=9),

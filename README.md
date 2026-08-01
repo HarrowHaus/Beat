@@ -1,3 +1,46 @@
+# Beat productions
+
+Two instrumentals, produced entirely in code (headless, no DAW), mixed and
+mastered production-ready for vocals.
+
+---
+
+# PREACHER'S CRUSH — the 2026 Ye beat
+
+**Listen:** `output2026/beat_mix.mp3` · master: `output2026/beat_mix.flac`
+
+Concept (from 2025–26 catalog research): **"Preacher Man's church + King's
+menace."** Bully-era DNA — chipmunk-soul chop, gospel organ, SP-1200 grit,
+sub-2:30 song form — crushed through Yeezus-grade industrial processing,
+resolving into a celestial outro with a Picardy lift and a tape slow-down.
+
+| | |
+|---|---|
+| BPM | **84** half-time, ~57% MPC swing on 16ths |
+| Key | **C minor** — Cm9 → Fm9 → B♭13sus → G7♯9, A♭maj7/G7♯9 turnaround |
+| Length | 46 bars ≈ 2:15 (Bully brevity is a feature) |
+| Headroom | −4 dBFS true peak, vocal-ready |
+
+Signature moves, all research-derived: the "soul sample" is **synthesized from
+scratch** (glottal source → vowel formants → vibrato), chipmunk-shifted
+(+1 octave, formants up) in hooks and pitched −12 with dark formants in the
+crush section; every chop is printed through 12-bit SP-1200-style rate
+reduction and tape saturation over a vinyl bed. Drums are swung boom-bap
+(kick displacement, ghost rimshots, no trap rolls) that mutate into an
+industrial stomp with a **metallic clank replacing the snare** in verse B —
+the *Sisters and Brothers* fuzz-the-loop move. A cappella chop+sub bridge
+(Ye edit culture), wailing vox lead + interstellar 5ths in hook 2, then
+drums-out organ/choir outro: Cm → A♭maj7 → **E♭ major lift** with tape
+slow-down on the final chord.
+
+Arrangement: intro (raw un-quantized chop) → verse A (organ sneaks in) →
+hook (chipmunk + choir + tambourine) → **crush** → a cappella bridge →
+hook 2 (+wail, +stars) → celestial outro. 13 stems + MIDI in `output2026/`.
+
+Rebuild: `python -m beatlab.score2026`
+
+---
+
 # HARROW — rage × Vultures hybrid instrumental
 
 A Playboi Carti / Vultures-era Kanye West style rap beat, produced entirely
