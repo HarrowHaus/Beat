@@ -233,15 +233,22 @@ class Track:
         pr = np.sin((self.pan + 1) * np.pi / 4)
         for t0, buf in self.events:
             i = int(t0 * SR)
+            stereo = buf.ndim == 2
+            length = buf.shape[-1]
             if i < 0:
-                buf = buf[-i:]
+                buf = buf[..., -i:]
+                length = buf.shape[-1]
                 i = 0
-            j = min(i + len(buf), n)
-            if i >= n or len(buf) == 0:
+            j = min(i + length, n)
+            if i >= n or length == 0:
                 continue
-            seg = buf[: j - i]
-            L[i:j] += seg * g * pl
-            R[i:j] += seg * g * pr
+            if stereo:
+                L[i:j] += buf[0, : j - i] * g
+                R[i:j] += buf[1, : j - i] * g
+            else:
+                seg = buf[: j - i]
+                L[i:j] += seg * g * pl
+                R[i:j] += seg * g * pr
         return np.stack([L, R])
 
 
