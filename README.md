@@ -1,7 +1,7 @@
 # Beat productions
 
 
-Six instrumentals, produced entirely in code (headless, no DAW), mixed and
+Seven instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
 
 ---
@@ -22,6 +22,34 @@ The pipeline now listens to itself — no human feedback required:
 First calibration pass on HEIRLOOM moved sub energy from 0.18 to 0.66
 (refs: 0.53), crest from 6.3 to 7.6 dB (refs: 9.1), while CLAP places all
 six beats' "professional" scores inside the commercial reference band.
+
+# KVLT — industrial Yeezus flip of an original black metal record
+
+**Listen:** `output_kvlt/beat_mix.mp3` · master: `output_kvlt/beat_mix.flac`
+**The "sample":** `output_kvlt/sample_source.flac` — an ORIGINAL black metal
+song written and recorded for this beat (tremolo power-chord riff in
+E minor/Phrygian, blast beats, shrieks, necro demo-tape print), so the flip
+is clearance-clean by construction.
+
+The flip, Yeezus-style: chops pitched −3 st (Em → **C♯ minor**, the Yeezus
+key center), MPC re-triggers/stutters/one reversed chop as the hook melody,
+a Surge lead **interpolating** the riff at quarter-note speed (the
+legally-distinct replay layer), industrial half-time drums (distorted kick,
+fat snare + stomp on 3), sub-first 808s per the machine-ears calibration.
+**Blast break** at bars 36–39 where the raw record tears through; 2-bar
+clean real-choir mute at 62–63 (the sacred interruption) before the
+loudest section; tape-stop outro over the reversed source.
+
+| | |
+|---|---|
+| BPM | **144** half-time (source recorded at 144 — chops loop on-grid) |
+| Key | **C♯ minor** (source in E minor, pitched −3) |
+| Length | 82 bars ≈ 2:17 · −10.5 LUFS · −4 dBFS TP |
+| Ears | born calibrated: sub 0.46 (refs 0.53), presence 0.017 (refs 0.026) |
+
+12 stems + MIDI in `output_kvlt/`. Rebuild: `python -m beatlab.score_kvlt`
+
+---
 
 # HEIRLOOM — first fully release-grade production (v2 pipeline)
 
