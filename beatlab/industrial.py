@@ -41,11 +41,18 @@ def synth_303(midi, dur, accent=False, slide_from=None, cutoff=900, res=9.0,
     else:
         f = np.full(n, f1)
     ph = 2 * np.pi * np.cumsum(f) / SR
-    x = sps.sawtooth(ph) if wave == "saw" else sps.square(ph)
+    # two-osc: main + hard-detuned partner (-45 cents — the out-of-tune menace)
+    ph2 = 2 * np.pi * np.cumsum(f * 2 ** (-45 / 1200)) / SR
+    if wave == "saw":
+        x = 0.6 * sps.sawtooth(ph) + 0.4 * sps.sawtooth(ph2)
+    else:
+        x = 0.6 * sps.square(ph, duty=0.57) + 0.4 * sps.square(ph2, duty=0.57)
     amt = env_amt * (1.6 if accent else 1.0)
     cut_env = cutoff + amt * env_exp(n, 0.09 if accent else 0.16)
     x = resonant_lp(x, cut_env, q=res)
     x *= env_adsr(n, a=0.003, d=0.08, s=0.55, r=min(0.03, dur * 0.2))
+    # wavefolder (the modular ingredient), then clip
+    x = 0.45 * x + 0.55 * np.sin(1.8 * np.pi * np.clip(x * 1.3, -1, 1))
     x = soft_clip(x * (1.5 if accent else 1.0), drive)
     if crushed:  # On Sight broken-speaker edge
         q = 2 ** 5
@@ -60,25 +67,30 @@ def synth_rock_tom(midi=45, dur=0.4, seed=301):
     f = f0 * 2 ** (-np.linspace(0, 0.5, n))
     body = np.sin(2 * np.pi * np.cumsum(f) / SR)
     body += 0.3 * np.sin(2 * 2 * np.pi * np.cumsum(f) / SR)
+    body += 0.32 * np.sin(1.5 * 2 * np.pi * np.cumsum(f) / SR) * env_exp(n, 0.06)
     skin = np.random.default_rng(seed).standard_normal(n) * env_exp(n, 0.008)
     x = body * env_exp(n, 0.13) + 0.25 * butter(skin, 2000, 'high')
     return soft_clip(x, 2.2) * 0.95
 
 
-def synth_stab(midis, dur, pw=0.18, seed=311):
-    """New Slaves-style hollow menacing stab: narrow-pulse detuned pair,
-    bandpassed, hard attack, fast die."""
+def synth_stab(midis, dur, pw=0.45, seed=311):
+    """New Slaves-style hollow menacing stab: 45%-duty detuned pulses +
+    sub-octave saw undertone, comb-colored, hard attack, fast die."""
     n = int(dur * SR)
     t = np.arange(n) / SR
     x = np.zeros(n)
     for i, m in enumerate(midis):
         f = note_to_hz(m)
-        for det in (-7, 0, 6):  # cents
+        for det in (-8, 0, 7):  # cents
             fd = f * 2 ** (det / 1200)
             x += sps.square(2 * np.pi * fd * t + 0.7 * i, duty=pw)
-    x /= (len(midis) * 3)
+        x += 0.4 * sps.sawtooth(2 * np.pi * f / 2 * t)  # ghostly undertone
+    x /= (len(midis) * 3.4)
     x = butter(butter(x, 3800, 'low'), 140, 'high')
-    return x * env_adsr(n, a=0.002, d=0.25, s=0.35, r=min(0.08, dur * 0.3))
+    d = int(0.0032 * SR)  # short comb — small-room boxiness
+    y = x.copy()
+    y[d:] += 0.35 * x[:-d]
+    return y * env_adsr(n, a=0.002, d=0.25, s=0.35, r=min(0.08, dur * 0.3))
 
 
 def synth_brass(midi, dur, voices=9, seed=321):

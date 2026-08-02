@@ -1,7 +1,44 @@
 # Beat productions
 
-Three instrumentals, produced entirely in code (headless, no DAW), mixed and
+Four instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
+
+---
+
+# CARNIVAL SKINHEAD — Yeezus × Vultures fusion
+
+**Listen:** `output_yeezus/beat_mix.mp3` · master: `output_yeezus/beat_mix.flac`
+
+Twin research tracks fed this one: a composition/style study of Yeezus
+(track-by-track BPM/keys/producers, Rick Rubin's documented 15-day
+strip-down, the structural-interruption grammar) and a sound-design study
+(TB-303 diode-ladder behavior, wavefolding, brass-cannon recipes, choir
+ensemble realism).
+
+| | |
+|---|---|
+| BPM | **145** — New Slaves (141) / FUK SUMN (142) / VULTURES (146) / CARNIVAL (148) intersection |
+| Key | **C♯ minor**, Phrygian ♭II (D major) in the stabs |
+| Length | 91 bars ≈ 2:30 |
+| Headroom | −4 dBFS true peak, vocal-ready |
+
+The grammar, per song it's borrowed from: **On Sight** — cold open on a
+broken screaming acid line (two saws detuned −45 cents through an
+envelope-swept resonant lowpass, then a wavefolder — the modular
+ingredient). **New Slaves** — verse B strips to two-chord 45%-pulse stabs
+with a sub-octave saw undertone; drums out. **Black Skinhead** — triplet
+long-short-short tom gallop (live-humanized ±8 ms/±3%), pant-breath
+percussion, Tarzan-scream fills. **Blood on the Leaves** — TNGHT brass
+cannons detonate after the interruption. **THE INTERRUPTION** — hard mute
+at bar 56 into a clean, wide gospel choir in the relative E major (per-voice
+onset scatter, formant-length variation), then smash-cut into the loudest
+section. **CARNIVAL** — stadium chant rides every hook as the melody.
+**Send It Up** — dancehall dembow outro with pitched vox, ending on one
+unresolved D-major choir chord.
+
+Mix rules from the research: dry, center, clipped — only the choir and
+chant get width, so width itself is the structural contrast. 14 stems +
+MIDI in `output_yeezus/`. Rebuild: `python -m beatlab.score_yeezus`
 
 ---
 

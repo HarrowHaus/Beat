@@ -93,9 +93,13 @@ def synth_choir(midis, dur, vowel="ah", spread=14, seed=81):
     x = np.zeros(n)
     for i, m in enumerate(midis):
         for v in range(3):
-            det = rng.uniform(-spread, spread) / 100
-            x += synth_vox(m + det * 0.12, dur, vowel=vowel, formant_shift=1.1,
-                           vib_depth=0.2, vib_hz=4.5 + 0.4 * v, seed=seed + i * 3 + v)
+            det = rng.normal(0, spread * 0.8) / 100
+            fs = 1.1 * rng.uniform(0.95, 1.05)   # vocal-tract length scatter
+            voice = synth_vox(m + det * 0.12, dur, vowel=vowel, formant_shift=fs,
+                              vib_depth=rng.uniform(0.12, 0.3),
+                              vib_hz=rng.uniform(4.5, 6.5), seed=seed + i * 3 + v)
+            onset = int(rng.uniform(0, 0.08) * SR)  # ensemble onset scatter
+            x[onset:] += voice[:n - onset]
     x /= (len(midis) * 3)
     return x * env_adsr(n, a=min(0.3, dur * 0.25), d=0.1, s=0.9, r=min(0.6, dur * 0.3)) * 1.6
 

@@ -59,6 +59,19 @@ CHAINS = {
         HighpassFilter(200),
         Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
     ]),
+    "acid": Pedalboard([           # On Sight riff/stabs: distorted, DRY, center
+        HighpassFilter(110),
+        Distortion(drive_db=12),
+        PeakFilter(cutoff_frequency_hz=2800, gain_db=-3.0, q=0.9),  # vocal pocket
+        Compressor(threshold_db=-12, ratio=4, attack_ms=4, release_ms=80),
+        LowpassFilter(9500),
+    ]),
+    "brass": Pedalboard([          # TNGHT cannon: big, saturated, dry
+        HighpassFilter(140),
+        Distortion(drive_db=8),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-2.5, q=1.0),
+        Compressor(threshold_db=-12, ratio=3.5, attack_ms=6, release_ms=100),
+    ]),
     "indus": Pedalboard([          # Machine Gun-style loop: crushed, DRY, mid-forward
         HighpassFilter(70),
         Distortion(drive_db=10),
