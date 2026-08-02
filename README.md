@@ -1,7 +1,27 @@
 # Beat productions
 
-Four instrumentals, produced entirely in code (headless, no DAW), mixed and
+Five instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
+
+---
+
+# NO MOON — an original composition
+
+**Listen:** `output_nomoon/beat_mix.mp3` · master: `output_nomoon/beat_mix.flac`
+
+Not modeled on any song — the corpus research is vocabulary here, not a
+template. **138 BPM half-time, G minor, 80 bars ≈ 2:19.**
+
+What makes it its own piece: **functional harmony** (a i–VI–III–VII cycle,
+Gm9–E♭maj7–B♭add9–Fadd9, with a real harmonic-minor cadence bridge
+Cm–D7♭9–Gm) instead of the genre's static vamps; a singable two-bar motif
+played by **FM bell and synthesized voice in unison** — one composite
+timbre; a **tresillo (3+3+2)** cell driving the 808 and hat accents; low
+choir "answers" at hook phrase-ends; and a **cyclical form** — the song
+ends as it began, motif alone over vinyl, the voice leaving before the
+bell. 11 stems + MIDI in `output_nomoon/`.
+
+Rebuild: `python -m beatlab.score_nomoon`
 
 ---
 
