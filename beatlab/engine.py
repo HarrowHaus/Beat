@@ -180,6 +180,29 @@ def synth_bell(midi, dur, seed=31):
     return x * env_exp(n, min(0.5, dur)) * 0.7
 
 
+def synth_chant(midi=57, dur=0.22, voices=6, seed=51):
+    """Staccato crowd-chant stab ('hey!'): detuned saw voices through open-vowel
+    formants, slight downward pitch scoop, breath-noise onset."""
+    n = int(dur * SR)
+    rng = np.random.default_rng(seed)
+    t = np.arange(n) / SR
+    f0 = note_to_hz(midi)
+    x = np.zeros(n)
+    for v in range(voices):
+        det = rng.uniform(-40, 40)  # cents — a crowd, not a synth
+        f = f0 * 2 ** (det / 1200) * 2 ** (-1.5 * t / dur / 12)  # scoop down
+        ph = 2 * np.pi * np.cumsum(f) / SR + rng.uniform(0, 6.28)
+        x += sps.sawtooth(ph)
+    x /= voices
+    y = np.zeros(n)
+    for fc, g in ((700, 1.0), (1200, 0.8), (2600, 0.35)):  # open "eh/ey" vowel
+        sos = sps.butter(2, [fc * 0.7 / (SR / 2), min(fc * 1.35, 20000) / (SR / 2)], 'band', output='sos')
+        y += g * sps.sosfilt(sos, x)
+    breath = rng.standard_normal(int(0.02 * SR)) * env_exp(int(0.02 * SR), 0.006)
+    y[:len(breath)] += 0.3 * butter(breath, 2000, 'high')
+    return soft_clip(y * env_adsr(n, a=0.008, d=0.1, s=0.5, r=0.06), 2.0) * 0.8
+
+
 def synth_riser(dur=1.8, seed=41):
     n = int(dur * SR)
     x = np.random.default_rng(seed).standard_normal(n)
@@ -210,12 +233,22 @@ class Track:
         pr = np.sin((self.pan + 1) * np.pi / 4)
         for t0, buf in self.events:
             i = int(t0 * SR)
-            j = min(i + len(buf), n)
-            if i >= n:
+            stereo = buf.ndim == 2
+            length = buf.shape[-1]
+            if i < 0:
+                buf = buf[..., -i:]
+                length = buf.shape[-1]
+                i = 0
+            j = min(i + length, n)
+            if i >= n or length == 0:
                 continue
-            seg = buf[: j - i]
-            L[i:j] += seg * g * pl
-            R[i:j] += seg * g * pr
+            if stereo:
+                L[i:j] += buf[0, : j - i] * g
+                R[i:j] += buf[1, : j - i] * g
+            else:
+                seg = buf[: j - i]
+                L[i:j] += seg * g * pl
+                R[i:j] += seg * g * pr
         return np.stack([L, R])
 
 

@@ -28,7 +28,8 @@ CHAINS = {
     ]),
     "hats": Pedalboard([
         HighpassFilter(600),
-        HighShelfFilter(cutoff_frequency_hz=10000, gain_db=2.0),
+        PeakFilter(cutoff_frequency_hz=4500, gain_db=2.5, q=0.8),
+        HighShelfFilter(cutoff_frequency_hz=9000, gain_db=4.0),
         Compressor(threshold_db=-18, ratio=2.5),
     ]),
     "clap": Pedalboard([
@@ -59,16 +60,84 @@ CHAINS = {
         HighpassFilter(200),
         Reverb(room_size=0.7, wet_level=0.3, dry_level=0.7),
     ]),
+    "pro": Pedalboard([            # release-grade sources: gentle glue only,
+        HighpassFilter(90),        # space is pre-printed via convolution IRs
+        PeakFilter(cutoff_frequency_hz=2800, gain_db=-2.5, q=0.9),
+        Chorus(rate_hz=0.35, depth=0.12, mix=0.16),  # subtle width/motion
+        Compressor(threshold_db=-18, ratio=2.2, attack_ms=12, release_ms=140),
+    ]),
+    "acid": Pedalboard([           # On Sight riff/stabs: distorted, DRY, center
+        HighpassFilter(110),
+        Distortion(drive_db=12),
+        PeakFilter(cutoff_frequency_hz=2800, gain_db=-3.0, q=0.9),  # vocal pocket
+        Compressor(threshold_db=-12, ratio=4, attack_ms=4, release_ms=80),
+        LowpassFilter(9500),
+    ]),
+    "brass": Pedalboard([          # TNGHT cannon: big, saturated, dry
+        HighpassFilter(140),
+        Distortion(drive_db=8),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-2.5, q=1.0),
+        Compressor(threshold_db=-12, ratio=3.5, attack_ms=6, release_ms=100),
+    ]),
+    "dusty": Pedalboard([          # Part-A crate loop: murky closet — thick
+        HighpassFilter(65),        # low-mids (anti-modern), dark, mono-ish
+        PeakFilter(cutoff_frequency_hz=320, gain_db=3.5, q=0.7),
+        PeakFilter(cutoff_frequency_hz=2600, gain_db=-3.0, q=0.9),
+        LowpassFilter(3800),
+        Compressor(threshold_db=-16, ratio=3, attack_ms=8, release_ms=110),
+    ]),
+    "metal": Pedalboard([          # chopped guitar-source: already crushed at
+        HighpassFilter(120),       # the print — pocket + glue only
+        PeakFilter(cutoff_frequency_hz=2900, gain_db=-3.0, q=0.9),
+        Compressor(threshold_db=-14, ratio=3.5, attack_ms=5, release_ms=90),
+        LowpassFilter(9000),
+    ]),
+    "indus": Pedalboard([          # Machine Gun-style loop: crushed, DRY, mid-forward
+        HighpassFilter(70),
+        Distortion(drive_db=10),
+        PeakFilter(cutoff_frequency_hz=1200, gain_db=3.0, q=0.7),
+        Compressor(threshold_db=-10, ratio=6, attack_ms=2, release_ms=50),
+        LowpassFilter(9000),
+    ]),
+    "drone": Pedalboard([
+        HighpassFilter(90),
+        PeakFilter(cutoff_frequency_hz=2600, gain_db=-4.0, q=0.8),  # vocal pocket
+        LowpassFilter(5500),
+        Chorus(rate_hz=0.3, depth=0.2, mix=0.3),
+        Compressor(threshold_db=-18, ratio=2),
+    ]),
+    "chop": Pedalboard([
+        HighpassFilter(60),
+        PeakFilter(cutoff_frequency_hz=400, gain_db=2.0, q=0.8),   # sample warmth
+        PeakFilter(cutoff_frequency_hz=2200, gain_db=-2.5, q=0.9),  # vocal pocket
+        HighShelfFilter(cutoff_frequency_hz=8000, gain_db=1.5),     # chipmunk sheen
+        Compressor(threshold_db=-16, ratio=3, attack_ms=10, release_ms=120),
+        Reverb(room_size=0.4, wet_level=0.1, dry_level=0.9),
+    ]),
+    "organ": Pedalboard([
+        HighpassFilter(100),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-3.0, q=0.9),
+        Reverb(room_size=0.55, wet_level=0.18, dry_level=0.82),
+        Compressor(threshold_db=-16, ratio=2.5),
+    ]),
+    "chant": Pedalboard([
+        HighpassFilter(280),
+        Distortion(drive_db=9),
+        PeakFilter(cutoff_frequency_hz=3000, gain_db=-4.0, q=0.9),  # vocal pocket
+        Chorus(rate_hz=0.4, depth=0.3, mix=0.4),  # widen the crowd
+        Reverb(room_size=0.6, wet_level=0.22, dry_level=0.78),
+        Compressor(threshold_db=-15, ratio=3),
+    ]),
 }
 
 MASTER = Pedalboard([
     HighpassFilter(24),
     LowShelfFilter(cutoff_frequency_hz=90, gain_db=1.5),      # weight
     PeakFilter(cutoff_frequency_hz=300, gain_db=-1.5, q=0.8),  # mud control
-    PeakFilter(cutoff_frequency_hz=3200, gain_db=-1.0, q=1.0), # vocal pocket
+    PeakFilter(cutoff_frequency_hz=3200, gain_db=-0.5, q=1.0), # vocal pocket
     HighShelfFilter(cutoff_frequency_hz=11000, gain_db=1.0),   # air
-    Compressor(threshold_db=-14, ratio=1.8, attack_ms=25, release_ms=180),  # glue
-    Limiter(threshold_db=-6.0, release_ms=120),                # vocal headroom
+    Compressor(threshold_db=-16, ratio=1.4, attack_ms=35, release_ms=220),  # glue
+    Limiter(threshold_db=-4.05, release_ms=80),                # vocal headroom
 ])
 
 
@@ -112,14 +181,16 @@ def mix_and_master(stems, duck_times, bpm, out_dir, stem_gains=None):
         pad[:, : x.shape[1]] = x
         processed[name] = pad
         if name.split("_")[0] not in ("808", "kick"):
-            pad = sidechain_duck(pad, duck_times, bpm, depth=0.35)
+            pad = sidechain_duck(pad, duck_times, bpm, depth=0.25)
         bus += pad
 
+    # F1lthy method: one shared soft-clipper across the whole instrumental bus
+    bus = np.tanh(bus * 1.05) / np.tanh(1.05)
     bus = mono_below(bus, 150)
     master = _proc(MASTER, bus)
     peak = np.abs(master).max()
-    if peak > 10 ** (-6 / 20):  # enforce -6 dBFS true headroom
-        master *= 10 ** (-6 / 20) / peak
+    if peak > 10 ** (-4 / 20):  # enforce -4 dBFS true peak headroom for vocals
+        master *= 10 ** (-4 / 20) / peak
 
     for name, x in processed.items():
         sf.write(os.path.join(out_dir, f"stem_{name}.wav"), x.T, SR, subtype="PCM_24")
