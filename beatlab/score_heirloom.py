@@ -131,8 +131,11 @@ def build():
 
     def choir_bar(bar, gain=1.0):
         ch = CHOIR_CHORDS[bar % 4]
-        x = choir.chord(ch, bar_s * 1.05, "male")
-        t_choir.add(at(bar), np.stack([x, x]) * gain)  # stereo via church IR later
+        L = choir.chord(ch, bar_s * 1.05, "male")
+        R = choir.chord([m + 0.14 for m in ch], bar_s * 1.05, "male")
+        off = int(0.011 * SR)  # decorrelated section: detune + time scatter
+        R = np.concatenate([np.zeros(off), R])[:len(L)]
+        t_choir.add(at(bar), np.stack([L, R]) * gain)
         for m in ch:
             midi_notes["choir"].append((m, at(bar), at(bar) + bar_s))
 
@@ -206,7 +209,7 @@ def build():
     # double hook 60-75: Distorted 808s, stabs
     t_fx.add(at(60), drums.one("Crash_Dark", "hard", 0.8))
     for b in range(60, 76):
-        bass_bar(b, k808_dist)
+        bass_bar(b, k808_dist, gain=1.2)
         drums_bar(b, dense=True)
         choir_bar(b)
         if b % 2 == 0:

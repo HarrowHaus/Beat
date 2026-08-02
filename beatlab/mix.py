@@ -62,6 +62,7 @@ CHAINS = {
     "pro": Pedalboard([            # release-grade sources: gentle glue only,
         HighpassFilter(90),        # space is pre-printed via convolution IRs
         PeakFilter(cutoff_frequency_hz=2800, gain_db=-2.5, q=0.9),
+        Chorus(rate_hz=0.35, depth=0.12, mix=0.16),  # subtle width/motion
         Compressor(threshold_db=-18, ratio=2.2, attack_ms=12, release_ms=140),
     ]),
     "acid": Pedalboard([           # On Sight riff/stabs: distorted, DRY, center

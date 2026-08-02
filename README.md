@@ -1,7 +1,40 @@
 # Beat productions
 
-Five instrumentals, produced entirely in code (headless, no DAW), mixed and
+Six instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
+
+---
+
+# HEIRLOOM — first fully release-grade production (v2 pipeline)
+
+**Listen:** `output_heirloom/beat_mix.mp3` · master: `output_heirloom/beat_mix.flac`
+
+Original composition on the upgraded professional pipeline — no synthesized
+toy timbres:
+
+- **Surge XT** (full open-source synth) rendered headless via **surgepy**
+  (built from source): factory patches *Deep End* (bass), *Belle* (motif
+  pluck), *Choir Pad Thing*, *DX EP* (keys), *Minor 7* (stabs)
+- **Professionally produced tuned 808s** (chromatic kits; Long style in
+  verses, Distorted in the final hooks) + **velocity-layered** pro
+  kicks/claps/hats (soft/mid/hard = real humanization)
+- **Real recorded choir** (Sonatina Chorus, male + female) printed through
+  a **real church impulse response**; EMT-140 plate on claps and pluck —
+  convolution, not algorithmic reverb
+- Produced risers, downlifters, crashes for every transition
+
+| | |
+|---|---|
+| BPM | **146** half-time |
+| Key | **B♭ minor** — B♭m / B♭m / G♭maj7 / Fm7 |
+| Length | 84 bars ≈ 2:18 |
+| Loudness | **−8.8 LUFS integrated**, −4 dBFS true peak — commercial level with vocal headroom |
+| Stereo | 6.7% side energy >500 Hz, dead-mono sub <150 Hz (verified) |
+
+12 stems + MIDI in `output_heirloom/`. Rebuild: `python -m beatlab.score_heirloom`
+(requires the pro source layer — see `beatlab/pro.py` docstring for the
+clone/build commands: Surge XT + surgepy, GareBear99 kits, Sonatina Chorus,
+Voxengo/EMT-140 IRs).
 
 ---
 
