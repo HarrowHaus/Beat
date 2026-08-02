@@ -79,6 +79,13 @@ CHAINS = {
         PeakFilter(cutoff_frequency_hz=3000, gain_db=-2.5, q=1.0),
         Compressor(threshold_db=-12, ratio=3.5, attack_ms=6, release_ms=100),
     ]),
+    "dusty": Pedalboard([          # Part-A crate loop: murky closet — thick
+        HighpassFilter(65),        # low-mids (anti-modern), dark, mono-ish
+        PeakFilter(cutoff_frequency_hz=320, gain_db=3.5, q=0.7),
+        PeakFilter(cutoff_frequency_hz=2600, gain_db=-3.0, q=0.9),
+        LowpassFilter(3800),
+        Compressor(threshold_db=-16, ratio=3, attack_ms=8, release_ms=110),
+    ]),
     "metal": Pedalboard([          # chopped guitar-source: already crushed at
         HighpassFilter(120),       # the print — pocket + glue only
         PeakFilter(cutoff_frequency_hz=2900, gain_db=-3.0, q=0.9),

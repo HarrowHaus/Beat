@@ -1,7 +1,7 @@
 # Beat productions
 
 
-Seven instrumentals, produced entirely in code (headless, no DAW), mixed and
+Eight instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
 
 ---
@@ -22,6 +22,36 @@ The pipeline now listens to itself — no human feedback required:
 First calibration pass on HEIRLOOM moved sub energy from 0.18 to 0.66
 (refs: 0.53), crest from 6.3 to 7.6 dB (refs: 9.1), while CLAP places all
 six beats' "professional" scores inside the commercial reference band.
+
+# BURNT CATHEDRAL — $uicideboy$ meets Vultures
+
+**Listen:** `output_g59/beat_mix.mp3` · master: `output_g59/beat_mix.flac`
+**The crate:** `output_g59/crate_source.flac` — an original 1971-style
+private-press gospel-soul record played on REAL instruments (VSCO upright
+piano, tremolo violin; Sonatina male choir), printed with wow/flutter and
+vinyl crackle, then pitched −3 st — the Memphis tape trick. Research
+confirmed this method is authentically $crim's: he demonstrably builds
+hits from royalty-free "vinyl crate" construction kits.
+
+**142 BPM half-time, C♯ minor** (source recorded at 169 BPM in E minor so
+the pitch-down lands exactly on grid; i–♭VI–♭VII–v becomes C♯m–A–B–G♯m —
+the Vultures anthem motion hidden inside the crate). Two-part beat switch
+(the $B signature): **Part A murky closet** — cowbell phonk ostinato
+(public-domain TR-808), Memphis 808 bounce with a Phrygian slide, rim+clap
+on 3, evil music-box nursery hook, bone dry; **SWITCH** — drums die, loop
+filters down, tape-stop, dead-phone-line beeps; **Part B burnt cathedral**
+— the record's choir+strings resolution revealed at full brightness
+through a real church IR, sustained 808 drones, stadium stomp-claps,
+crowd chant, one bar of dead silence (−52 dB, verified).
+
+Mined with machine ears: Demucs-separated three real $B tracks — tempo
+152–157, 808 fundamentals 41–52 Hz, cowbell-band 3% of drums, 5.4 drum
+onsets/s — and the beat was tuned to match (onsets 5.4/5.4, sub
+0.45/0.44 vs their corpus). 13 stems + MIDI. ≈2:52, −11.3 LUFS, −4 dBTP.
+
+Rebuild: `python -m beatlab.score_g59`
+
+---
 
 # KVLT — industrial Yeezus flip of an original black metal record
 
