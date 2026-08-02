@@ -63,6 +63,7 @@ def build():
     bar_s = seq.bar
 
     k808_long = Kit808("Long")
+    k808_sub = Kit808("Sub")
     k808_dist = Kit808("Distorted")
     drums = DrumKit()
     choir = ChoirSampler()
@@ -80,8 +81,8 @@ def build():
 
     t_808 = seq.track("808", gain_db=-3.5)
     t_kick = seq.track("kick", gain_db=-5)
-    t_hats = seq.track("hats", gain_db=-12)
-    t_clap = seq.track("clap", gain_db=-6.5)
+    t_hats = seq.track("hats", gain_db=-6.5)
+    t_clap = seq.track("clap", gain_db=-4)
     t_perc = seq.track("hats_perc", gain_db=-15, pan=-0.3)
     t_choir = seq.track("pro_choir", gain_db=-8)
     t_fx = seq.track("fx", gain_db=-11)
@@ -94,7 +95,9 @@ def build():
         hits = [(0, 6), (7, 3), (11, 5)] if bar % 2 == 0 else [(0, 7), (10, 3), (13, 3)]
         for step, dur in hits:
             t0 = at(bar, step)
-            t_808.add(t0, kit.note(root, dur * sx) * gain)
+            t_808.add(t0, kit.note(root - 12, dur * sx) * gain)
+            t_808.add(t0, k808_sub.note(root - 12, dur * sx) * 0.9 * gain)
+            t_808.add(t0, kit.note(root, dur * sx) * 0.35 * gain)
             midi_notes["808"].append((root, t0, t0 + dur * sx))
             bass_notes.append((bar, step, root + 24, min(dur, 3)))  # synth doubles up 2 octaves
 
@@ -109,10 +112,13 @@ def build():
         t0 = at(bar, 8)
         t_clap.add(t0, drums.one("Clap_Trap", "hard"))
         t_clap.add(t0, drums.one("Snare_Trap", "mid", 0.55))
+        t_hats.add(t0, drums.one("Tambourine", "mid", 0.8))
         # hats: velocity-layered 8ths, 16th ghosts when dense
         for step in range(0, 16, 2):
             vel = "hard" if step % 4 == 0 else "mid"
             t_hats.add(at(bar, step), drums.one("Hat_Trap", vel, 0.9))
+            if step % 8 == 0:
+                t_hats.add(at(bar, step), drums.one("Hat_Closed", "hard", 0.55))
         if dense:
             for step in (3, 7, 11, 15):
                 t_hats.add(at(bar, step), drums.one("Hat_Trap", "soft", 0.7))

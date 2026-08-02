@@ -28,7 +28,8 @@ CHAINS = {
     ]),
     "hats": Pedalboard([
         HighpassFilter(600),
-        HighShelfFilter(cutoff_frequency_hz=10000, gain_db=2.0),
+        PeakFilter(cutoff_frequency_hz=4500, gain_db=2.5, q=0.8),
+        HighShelfFilter(cutoff_frequency_hz=9000, gain_db=4.0),
         Compressor(threshold_db=-18, ratio=2.5),
     ]),
     "clap": Pedalboard([
@@ -120,10 +121,10 @@ MASTER = Pedalboard([
     HighpassFilter(24),
     LowShelfFilter(cutoff_frequency_hz=90, gain_db=1.5),      # weight
     PeakFilter(cutoff_frequency_hz=300, gain_db=-1.5, q=0.8),  # mud control
-    PeakFilter(cutoff_frequency_hz=3200, gain_db=-1.0, q=1.0), # vocal pocket
+    PeakFilter(cutoff_frequency_hz=3200, gain_db=-0.5, q=1.0), # vocal pocket
     HighShelfFilter(cutoff_frequency_hz=11000, gain_db=1.0),   # air
-    Compressor(threshold_db=-14, ratio=1.8, attack_ms=25, release_ms=180),  # glue
-    Limiter(threshold_db=-4.5, release_ms=120),                # vocal headroom
+    Compressor(threshold_db=-16, ratio=1.4, attack_ms=35, release_ms=220),  # glue
+    Limiter(threshold_db=-4.05, release_ms=80),                # vocal headroom
 ])
 
 
@@ -167,11 +168,11 @@ def mix_and_master(stems, duck_times, bpm, out_dir, stem_gains=None):
         pad[:, : x.shape[1]] = x
         processed[name] = pad
         if name.split("_")[0] not in ("808", "kick"):
-            pad = sidechain_duck(pad, duck_times, bpm, depth=0.35)
+            pad = sidechain_duck(pad, duck_times, bpm, depth=0.25)
         bus += pad
 
     # F1lthy method: one shared soft-clipper across the whole instrumental bus
-    bus = np.tanh(bus * 1.4) / np.tanh(1.4)
+    bus = np.tanh(bus * 1.05) / np.tanh(1.05)
     bus = mono_below(bus, 150)
     master = _proc(MASTER, bus)
     peak = np.abs(master).max()

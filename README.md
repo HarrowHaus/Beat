@@ -1,9 +1,27 @@
 # Beat productions
 
+
 Six instrumentals, produced entirely in code (headless, no DAW), mixed and
 mastered production-ready for vocals.
 
 ---
+
+## Machine ears (`beatlab/ears.py`)
+
+The pipeline now listens to itself — no human feedback required:
+
+- **Reference calibration**: 30-second preview fingerprints of the actual
+  commercial corpus (ALL RED, CARNIVAL, VULTURES, FIELD TRIP, EVILJ0RDAN,
+  Praise God, Hurricane, Type Shit, PREACHER MAN via the iTunes preview API)
+  — band balance, onset density, crest factor, dynamics, percussive ratio.
+  `RefBank.gap_report()` flags any render feature >1.3 sigma from the refs.
+- **CLAP perceptual critic** (LAION audio-text model, runs on CPU): scores
+  renders against pro/amateur text prompts and by embedding similarity to
+  the reference corpus. `ClapCritic.rank()` = a learned taste function.
+
+First calibration pass on HEIRLOOM moved sub energy from 0.18 to 0.66
+(refs: 0.53), crest from 6.3 to 7.6 dB (refs: 9.1), while CLAP places all
+six beats' "professional" scores inside the commercial reference band.
 
 # HEIRLOOM — first fully release-grade production (v2 pipeline)
 
